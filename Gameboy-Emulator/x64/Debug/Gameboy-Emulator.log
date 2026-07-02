@@ -1,0 +1,14 @@
+﻿  CPU.cpp
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\include\Utils.h(18,23): warning C4333: '>>': right shift by too large amount, data loss
+  (compiling source file 'src/CPU.cpp')
+  
+  Debugger.cpp
+  GameBoy.cpp
+  main.cpp
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\main.cpp(7,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\CPU.cpp(747,1): warning C4715: 'CPU::GetReg': not all control paths return a value
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\CPU.cpp(764,1): warning C4715: 'CPU::GetReg': not all control paths return a value
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\CPU.cpp(833,1): warning C4715: 'CPU::GetReg': not all control paths return a value
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\CPU.cpp(899,1): warning C4715: 'CPU::GetFlag': not all control paths return a value
+  Gameboy-Emulator.vcxproj -> C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\x64\Debug\Gameboy-Emulator.exe

@@ -1,0 +1,11 @@
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\external\imgui\imgui\imgui.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\imgui.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\external\imgui\imgui\imgui_draw.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\imgui_draw.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\external\imgui\imgui\imgui_tables.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\imgui_tables.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\external\imgui\imgui\imgui_widgets.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\imgui_widgets.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\external\imgui\rlImGui.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\rlImGui.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\Cartridge.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\Cartridge.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\CPU.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\CPU.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\Debugger.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\Debugger.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\GameBoy.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\GameBoy.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\main.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\main.obj
+C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\src\MemoryBus.cpp;C:\Users\Asch\Desktop\Projects\Gameboy-Emulator\Gameboy-Emulator\x64\Debug\MemoryBus.obj
