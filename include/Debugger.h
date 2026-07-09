@@ -22,6 +22,6 @@ private:
 
 	void DrawRegisters();
 	void DrawControls();
-	void DrawBootROM();
+	void DrawMemory();
 	void DrawHistory();
 };

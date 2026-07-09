@@ -30,6 +30,7 @@
     <ClCompile Include="src\GameBoy.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MemoryBus.cpp" />
+    <ClCompile Include="src\PPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Cartridge.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="include\Debugger.h" />
     <ClInclude Include="include\GameBoy.h" />
     <ClInclude Include="include\MemoryBus.h" />
+    <ClInclude Include="include\PPU.h" />
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

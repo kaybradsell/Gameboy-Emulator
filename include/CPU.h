@@ -76,6 +76,7 @@ private:
 	uint16_t Pop();
 
 	void NOP();				// 0x00
+	void INC_B();			// 0x04
 	void DEC_B();			// 0x05
 	void LD_B_u8();			// 0x06
 	void INC_C();			// 0x0C
@@ -83,13 +84,17 @@ private:
 	void LD_C_u8();			// 0x0E
 	void LD_DE_u16();		// 0x11
 	void INC_DE();			// 0x13
+	void DEC_D();			// 0x15
 	void RLA();				// 0x17
 	void JR_i8();			// 0x18
 	void LDL_A_DE();		// 0x1A
+	void DEC_E();			// 0x1D
+	void LD_E_u8();			// 0x1E
 	void JR_NZ_i8();		// 0x20
 	void LD_HL_u16();		// 0x21
 	void LD_HL_plus_A();	// 0x22
 	void INC_HL();			// 0x23
+	void INC_H();			// 0x24
 	void JR_Z_i8();			// 0x28
 	void LD_L_u8();			// 0x2E
 	void LD_SP_u16();		// 0x31
@@ -97,9 +102,15 @@ private:
 	void DEC_A();			// 0x3D
 	void LD_A_u8();			// 0x3E
 	void LD_C_A();			// 0x4F
+	void LD_D_A();			// 0x57
+	void LD_H_A();			// 0x67
 	void LD_HL_A();			// 0x77
 	void LD_A_E();			// 0x7B
+	void LD_A_H();			// 0x7C
+	void LD_A_L();			// 0x7D
+	void SUB_A_B();			// 0x90
 	void XOR_r();			// 0xA8 - 0xAF
+	void CP_A_HL();			// 0xBE
 	void POP_BC();			// 0xC1
 	void PUSH_BC();			// 0xC5
 	void RET();				// 0xC9
@@ -108,6 +119,7 @@ private:
 	void LDH_u8_A();		// 0xE0
 	void LDH_C_A();			// 0xE2
 	void LDL_u16_A();		// 0xEA
+	void LDH_A_u8();		// 0xF0
 	void CP_A_u8();			// 0xFE
 
 	void CB_Execute(uint8_t op, uint8_t reg);

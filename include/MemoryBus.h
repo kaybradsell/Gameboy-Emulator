@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cartridge.h>
+#include <PPU.h>
 #include <memory>
 #include <array>
 #include <cstdint>
@@ -9,7 +10,7 @@
 class MemoryBus
 {
 public:
-	MemoryBus();
+	MemoryBus(PPU& ppu);
 	bool isInitialised() { return true; } // TODO: add check for memory bus
 	void LoadBootROM(const std::string& path);
 
@@ -23,5 +24,5 @@ private:
 	std::array<uint8_t, 256> bootROM{};		// read boot rom into here
 	std::array<uint8_t, 0x7F> HRAM{};		// High RAM :D
 	Cartridge cartridge;
-
+	PPU& ppu;
 };

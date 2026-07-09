@@ -28,7 +28,7 @@ void Debugger::Display()
 
 	DrawRegisters();
 	DrawControls();
-	DrawBootROM();
+	DrawMemory();
 	DrawHistory();
 
 	rlImGuiEnd();
@@ -39,8 +39,19 @@ void Debugger::DrawControls()
 {
 	ImGui::Begin("Controls");
 
+	static bool paused = false;
+	ImGui::Checkbox("Pause", &paused);
+	gb->Pause(paused);
+
 	if (ImGui::Button("Step"))
-		gb->Cycle();
+		gb->Step();
+
+	ImGui::SameLine();
+	if (ImGui::Button("+5"))
+	{
+		for (int i = 0; i < 5; i++)
+			gb->Step();
+	}
 
 	if (ImGui::Button("Skip Loop"))
 		gb->SkipLoop();
@@ -51,82 +62,160 @@ void Debugger::DrawControls()
 void Debugger::DrawRegisters()
 {
 	ImGui::Begin("Registers");
-	const Registers r = gb->GetCPU().GetRegisters();
 
-	ImGui::Text("A: 0x%02X", r.A);
-	ImGui::Text("B: 0x%02X", r.B);
-	ImGui::Text("C: 0x%02X", r.C);
-	ImGui::Text("D: 0x%02X", r.D);
-	ImGui::Text("E: 0x%02X", r.E);
-	ImGui::Text("F: 0x%02X", r.F);
-	ImGui::Text("H: 0x%02X", r.H);
-	ImGui::Text("L: 0x%02X", r.L);
+	if (ImGui::BeginTabBar("Register Tabs"))
+	{
+		if (ImGui::BeginTabItem("CPU"))
+		{
+			const Registers r = gb->GetCPU().GetRegisters();
 
-	ImGui::Text("PC: 0x%04X", r.PC);
-	ImGui::Text("SP: 0x%04X", r.SP);
+			ImGui::Text("A: 0x%02X", r.A);
+			ImGui::Text("B: 0x%02X", r.B);
+			ImGui::Text("C: 0x%02X", r.C);
+			ImGui::Text("D: 0x%02X", r.D);
+			ImGui::Text("E: 0x%02X", r.E);
+			ImGui::Text("F: 0x%02X", r.F);
+			ImGui::Text("H: 0x%02X", r.H);
+			ImGui::Text("L: 0x%02X", r.L);
 
-	ImGui::Separator();
+			ImGui::Text("PC: 0x%04X", r.PC);
+			ImGui::Text("SP: 0x%04X", r.SP);
 
-	ImGui::Text("Z: %d", (r.F & 0x80) != 0);
-	ImGui::Text("N: %d", (r.F & 0x40) != 0);
-	ImGui::Text("H: %d", (r.F & 0x20) != 0);
-	ImGui::Text("C: %d", (r.F & 0x10) != 0);
+			ImGui::Separator();
+
+			ImGui::Text("Z: %d", (r.F & 0x80) != 0);
+			ImGui::Text("N: %d", (r.F & 0x40) != 0);
+			ImGui::Text("H: %d", (r.F & 0x20) != 0);
+			ImGui::Text("C: %d", (r.F & 0x10) != 0);
+
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("PPU"))
+		{
+			const PPU::LCDRegs& r = gb->GetPPU().GetRegs();
+
+			ImGui::Text("LCDC: 0x%02X", r.LCDC);
+			ImGui::Text("STAT: 0x%02X", r.STAT);
+			ImGui::Text("SCY : 0x%02X", r.SCY);
+			ImGui::Text("SCX : 0x%02X", r.SCX);
+			ImGui::Text("LY  : 0x%02X", r.LY);
+			ImGui::Text("LYC : 0x%02X", r.LYC);
+			ImGui::Text("DMA : 0x%02X", r.DMA);
+			ImGui::Text("BGP : 0x%02X", r.BGP);
+			ImGui::Text("OBP0: 0x%02X", r.OBP0);
+			ImGui::Text("OBP1: 0x%02X", r.OBP1);
+			ImGui::Text("WY  : 0x%02X", r.WY);
+			ImGui::Text("WX  : 0x%02X", r.WX);
+
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+	
 
 	ImGui::End();
 }
 
-void Debugger::DrawBootROM()
+void Debugger::DrawMemory()
 {
 	ImGui::Begin("Boot ROM");
 
-	ImGui::BeginChild("MemoryScrollRegion", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
-	const std::array<uint8_t, 256>& rom = gb->GetMemoryBus().GetBootROM();
-
-	uint16_t pc = gb->GetCPU().GetRegisters().PC;
-	uint16_t lastpc = gb->GetCPU().GetLastPC();
-	uint16_t start = lastpc;
-	uint16_t end = pc - 1;
-
-	for (int row = 0; row < 16; row++)
+	if (ImGui::BeginTabBar("Memory Tabs"))
 	{
-		int base = row * 16;
-		ImGui::Text("%04X:", base);
-		ImGui::SameLine();
-
-		for (int i = 0; i < 16; i++)
+		if (ImGui::BeginTabItem("Boot ROM"))
 		{
-			uint16_t addr = base + i;
-			ImGui::SameLine();
+			ImGui::BeginChild("MemoryScrollRegion", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+			const std::array<uint8_t, 256>& rom = gb->GetMemoryBus().GetBootROM();
 
-			if (addr >= start && addr <= end)
+			uint16_t pc = gb->GetCPU().GetRegisters().PC;
+			uint16_t lastpc = gb->GetCPU().GetLastPC();
+			uint16_t start = lastpc;
+			uint16_t end = pc - 1;
+
+			for (int row = 0; row < 16; row++)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(209, 16, 100, 255));
-				ImGui::Text("%02X", rom[base + i]);
-				ImGui::PopStyleColor();
+				int base = row * 16;
+				ImGui::Text("%04X:", base);
+				ImGui::SameLine();
+
+				for (int i = 0; i < 16; i++)
+				{
+					uint16_t addr = base + i;
+					ImGui::SameLine();
+
+					if (addr >= start && addr <= end)
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(209, 16, 100, 255));
+						ImGui::Text("%02X", rom[base + i]);
+						ImGui::PopStyleColor();
+					}
+					else
+					{
+						ImGui::Text("%02X", rom[base + i]);
+					}
+				}
+
+				ImGui::SameLine();
+
+				ImGui::SameLine();
+				char ascii[17];
+
+				for (int i = 0; i < 16; i++)
+				{
+					uint8_t v = rom[base + i];
+					ascii[i] = (v >= 32 && v <= 126) ? (char)v : '.';
+				}
+
+				ascii[16] = '\0';
+
+				ImGui::Text("%s", ascii);
 			}
-			else
-			{
-				ImGui::Text("%02X", rom[base + i]);
-			}
+
+			ImGui::EndChild();
+			ImGui::EndTabItem();
 		}
-
-		ImGui::SameLine();
-
-		ImGui::SameLine();
-		char ascii[17];
-
-		for (int i = 0; i < 16; i++)
+		if (ImGui::BeginTabItem("VRAM"))
 		{
-			uint8_t v = rom[base + i];
-			ascii[i] = (v >= 32 && v <= 126) ? (char)v : '.';
+			ImGui::BeginChild("MemoryScrollRegion", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+			const std::array<uint8_t, 0x2000>& vram = gb->GetPPU().GetVram();
+
+			for (int row = 0; row < (0x2000 / 16); row++)
+			{
+				int base = row * 16;
+				ImGui::Text("%04X:", base);
+				ImGui::SameLine();
+
+				for (int i = 0; i < 16; i++)
+				{
+					ImGui::SameLine();
+
+					ImGui::Text("%02X", vram[base + i]);
+				}
+
+				ImGui::SameLine();
+
+				ImGui::SameLine();
+				char ascii[17];
+
+				for (int i = 0; i < 16; i++)
+				{
+					uint8_t v = vram[base + i];
+					ascii[i] = (v >= 32 && v <= 126) ? (char)v : '.';
+				}
+
+				ascii[16] = '\0';
+
+				ImGui::Text("%s", ascii);
+			}
+
+			ImGui::EndChild();
+			ImGui::EndTabItem();
 		}
-
-		ascii[16] = '\0';
-
-		ImGui::Text("%s", ascii);
+		ImGui::EndTabBar();
 	}
 
-	ImGui::EndChild();
 	ImGui::End();
 
 }

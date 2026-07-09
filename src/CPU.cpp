@@ -29,12 +29,13 @@ void CPU::Step()
 	lastPC = regs.PC;
 	ss.str("");
 
+	/*
 	if (regs.PC == 0x0030)
 		regs.PC = 0x0034;
 
 	if (regs.PC == 0x003E)
 		regs.PC = 0x0040;
-
+	*/
 
 	// fetch
 	uint8_t byte = FetchU8();
@@ -72,6 +73,7 @@ void CPU::FillOpcodeTable()
 {
 	opcode.fill(&CPU::NOP);
 
+	opcode[0x04] = &CPU::INC_B;
 	opcode[0x05] = &CPU::DEC_B;
 	opcode[0x06] = &CPU::LD_B_u8;
 	opcode[0x0C] = &CPU::INC_C;
@@ -80,14 +82,18 @@ void CPU::FillOpcodeTable()
 
 	opcode[0x11] = &CPU::LD_DE_u16;
 	opcode[0x13] = &CPU::INC_DE;
+	opcode[0x15] = &CPU::DEC_D;
 	opcode[0x17] = &CPU::RLA;
 	opcode[0x18] = &CPU::JR_i8;
 	opcode[0x1A] = &CPU::LDL_A_DE;
+	opcode[0x1D] = &CPU::DEC_E;
+	opcode[0x1E] = &CPU::LD_E_u8;
 
 	opcode[0x20] = &CPU::JR_NZ_i8;
 	opcode[0x21] = &CPU::LD_HL_u16;
 	opcode[0x22] = &CPU::LD_HL_plus_A;
 	opcode[0x23] = &CPU::INC_HL;
+	opcode[0x24] = &CPU::INC_H;
 	opcode[0x28] = &CPU::JR_Z_i8;
 	opcode[0x2E] = &CPU::LD_L_u8;
 
@@ -98,8 +104,16 @@ void CPU::FillOpcodeTable()
 
 	opcode[0x4F] = &CPU::LD_C_A;
 
+	opcode[0x57] = &CPU::LD_D_A;
+
+	opcode[0x67] = &CPU::LD_H_A;
+
 	opcode[0x77] = &CPU::LD_HL_A;
 	opcode[0x7B] = &CPU::LD_A_E;
+	opcode[0x7C] = &CPU::LD_A_H;
+	opcode[0x7D] = &CPU::LD_A_L;
+
+	opcode[0x90] = &CPU::SUB_A_B;
 
 	opcode[0xA8] = &CPU::XOR_r;
 	opcode[0xA9] = &CPU::XOR_r;
@@ -109,6 +123,8 @@ void CPU::FillOpcodeTable()
 	opcode[0xAD] = &CPU::XOR_r;
 	opcode[0xAE] = &CPU::XOR_r;
 	opcode[0xAF] = &CPU::XOR_r;
+
+	opcode[0xBE] = &CPU::CP_A_HL;
 
 	opcode[0xC1] = &CPU::POP_BC;
 	opcode[0xC5] = &CPU::PUSH_BC;
@@ -120,6 +136,7 @@ void CPU::FillOpcodeTable()
 	opcode[0xE2] = &CPU::LDH_C_A;
 	opcode[0xEA] = &CPU::LDL_u16_A;
 
+	opcode[0xF0] = &CPU::LDH_A_u8;
 	opcode[0xFE] = &CPU::CP_A_u8;
 }
 
@@ -128,6 +145,21 @@ void CPU::FillOpcodeTable()
 void CPU::NOP()
 {
 	currentOpcode = "NOP";
+}
+
+//----------------------------------------------
+
+void CPU::INC_B()
+{
+	uint8_t oldVal = regs.B;
+	regs.C++;
+
+	SetFlag(Flags::Z, regs.B == 0);
+	SetFlag(Flags::N, false);
+	SetFlag(Flags::H, (oldVal & 0x0F) == 0x0F);
+
+	ss << "INC B";
+	currentOpcode = ss.str();
 }
 
 //----------------------------------------------
@@ -225,6 +257,21 @@ void CPU::INC_DE()
 
 //----------------------------------------------
 
+void CPU::DEC_D()
+{
+	uint8_t oldVal = regs.D;
+	regs.D--;
+
+	SetFlag(Flags::Z, regs.D == 0);
+	SetFlag(Flags::N, true);
+	SetFlag(Flags::H, ((oldVal & 0x0F) == 0x00));
+
+	ss << "DEC D";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
 void CPU::RLA()
 {
 	uint8_t val = GetReg(Regs::A);
@@ -266,6 +313,33 @@ void CPU::LDL_A_DE()
 	SetReg(Regs::A, byte);
 
 	ss << "LD A, 0x" << std::hex << std::uppercase << (int)byte;
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::DEC_E()
+{
+	uint8_t oldVal = regs.E;
+	regs.E--;
+
+	SetFlag(Flags::Z, regs.E == 0);
+	SetFlag(Flags::N, true);
+	SetFlag(Flags::H, ((oldVal & 0x0F) == 0x00));
+
+	ss << "DEC E";
+	currentOpcode = ss.str();
+}
+
+
+//----------------------------------------------
+
+void CPU::LD_E_u8()
+{
+	uint8_t byte = FetchU8();
+	SetReg(Regs::E, byte);
+
+	ss << "LD E, 0x" << std::hex << std::uppercase << (int)byte;
 	currentOpcode = ss.str();
 }
 
@@ -317,6 +391,21 @@ void CPU::INC_HL()
 	SetReg(Regs16::HL, hl + 1);
 
 	ss << "INC HL";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::INC_H()
+{
+	uint8_t oldVal = regs.H;
+	regs.H++;
+
+	SetFlag(Flags::Z, regs.H == 0);
+	SetFlag(Flags::N, false);
+	SetFlag(Flags::H, (oldVal & 0x0F) == 0x0F);
+
+	ss << "INC H";
 	currentOpcode = ss.str();
 }
 
@@ -405,7 +494,27 @@ void CPU::LD_C_A()
 {
 	SetReg(Regs::C, GetReg(Regs::A));
 
-	ss << "LD A, C";
+	ss << "LD C, A";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::LD_D_A()
+{
+	SetReg(Regs::D, GetReg(Regs::A));
+
+	ss << "LD D, A";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::LD_H_A()
+{
+	SetReg(Regs::H, GetReg(Regs::A));
+
+	ss << "LD H, A";
 	currentOpcode = ss.str();
 }
 
@@ -432,6 +541,44 @@ void CPU::LD_A_E()
 
 //----------------------------------------------
 
+void CPU::LD_A_H()
+{
+	regs.A = regs.H;
+
+	ss << "LD A, H";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::LD_A_L()
+{
+	regs.A = regs.L;
+
+	ss << "LD A, L";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::SUB_A_B()
+{
+	uint8_t oldA = regs.A;
+	uint8_t result = oldA - regs.B;
+
+	SetFlag(Flags::Z, result == 0);
+	SetFlag(Flags::N, true);
+	SetFlag(Flags::H, (oldA & 0x0F) < (regs.B & 0x0f));
+	SetFlag(Flags::C, oldA < regs.B);
+
+	regs.A = result;
+
+	ss << "SUB A, B";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
 void CPU::XOR_r()
 {
 	uint8_t op = lastOpcode;
@@ -444,6 +591,23 @@ void CPU::XOR_r()
 	SetFlag(Flags::C, false);
 
 	ss << "XOR A, " << GetRegName(reg);
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::CP_A_HL()
+{
+	uint8_t A = regs.A;
+	uint16_t addr = GetReg(Regs16::HL);
+	uint8_t byte = mem.GetByte(addr);
+
+	SetFlag(Flags::Z, A == byte);
+	SetFlag(Flags::N, true);
+	SetFlag(Flags::H, (A & 0x0F) < (byte & 0x0F));
+	SetFlag(Flags::C, (A < byte));
+
+	ss << "CP A, (HL)";
 	currentOpcode = ss.str();
 }
 
@@ -557,6 +721,18 @@ void CPU::LDL_u16_A()
 	mem.WriteByte(addr, regs.A);
 
 	ss << "LDL 0x" << std::hex << std::uppercase << (int)addr << ", A";
+	currentOpcode = ss.str();
+}
+
+//----------------------------------------------
+
+void CPU::LDH_A_u8()
+{
+	uint8_t byte = FetchU8();
+	uint16_t addr = 0xFF00 + byte;
+	SetReg(Regs::A, mem.GetByte(addr));
+
+	ss << "LDH A, 0x" << std::hex << std::uppercase << (int)addr;
 	currentOpcode = ss.str();
 }
 
