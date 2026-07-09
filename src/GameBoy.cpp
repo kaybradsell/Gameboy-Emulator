@@ -1,9 +1,10 @@
 #include <GameBoy.h>
 #include <iostream>
 
-GameBoy::GameBoy() : ppu(), mem(ppu), cpu(mem)
+GameBoy::GameBoy() : cart(), ppu(), mem(ppu, cart), cpu(mem)
 {
 	mem.LoadBootROM(bootROMpath);
+	cart.LoadROM("ROMS/tetris.gb");
 	paused = true;
 }
 
@@ -17,14 +18,8 @@ void GameBoy::Cycle()
 	//paused = true;
 	if (paused) return;
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < speed; i++)
 	{
-		if (cpu.GetLastPC() == 0xf1)
-		{
-			paused = true;
-			break;
-		}
-
 		Step();
 	}
 	

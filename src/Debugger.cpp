@@ -5,6 +5,7 @@ Debugger::Debugger(GameBoy* gb)
 	this->gb = gb;
 
 	SetTraceLogLevel(LOG_ERROR);
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(1280, 720, "Chip-8 Emulator");
 	SetTargetFPS(60);
 	rlImGuiSetup(true);
@@ -12,6 +13,9 @@ Debugger::Debugger(GameBoy* gb)
 	ImGui::StyleColorsDarkPink();
 
 	history.fill("");
+
+	tileImage = GenImageColor(TILEMAXX * TILESIZE, TILEMAXY * TILESIZE, BLACK);
+	tileTexture = LoadTextureFromImage(tileImage);
 }
 
 bool Debugger::Running()
@@ -30,6 +34,7 @@ void Debugger::Display()
 	DrawControls();
 	DrawMemory();
 	DrawHistory();
+	DrawTileViewer();
 
 	rlImGuiEnd();
 	EndDrawing();
@@ -53,8 +58,7 @@ void Debugger::DrawControls()
 			gb->Step();
 	}
 
-	if (ImGui::Button("Skip Loop"))
-		gb->SkipLoop();
+	ImGui::SliderInt("Speed", &(gb->speed), 0, 10000);
 
 	ImGui::End();
 }
@@ -236,4 +240,64 @@ void Debugger::DrawHistory()
 	}
 
 	ImGui::End();
+}
+
+void Debugger::DrawTileViewer()
+{
+	// draws tiles to vbuffer
+	int tileIndex = 0;
+
+	for (int y = 0; y < TILEMAXY; y++)
+	{
+		for (int x = 0; x < TILEMAXX; x++)
+		{
+			DrawTile(gb->GetPPU().GetTile(tileIndex++), x * TILESIZE, y * TILESIZE);
+		}
+	}
+
+	UpdateTexture(tileTexture, vbuffer);
+
+	ImGui::Begin("Tile Viewer");
+
+	const static float w = 25 * TILEMAXX;
+	const static float h = 25 * TILEMAXY;
+
+	ImGui::Image((ImTextureID)tileTexture.id, ImVec2(w, h));
+
+	// grid overlay :)
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	ImVec2 min = ImGui::GetItemRectMin();
+	ImVec2 max = ImGui::GetItemRectMax();
+
+	float tileW = w / TILEMAXX;
+	float tileH = h / TILEMAXY;
+
+	ImU32 gridColour = IM_COL32(0, 0, 0, 128);
+
+	for (int x = 0; x <= TILEMAXX; x++)
+	{
+		float px = min.x + x * tileW;
+		drawList->AddLine(ImVec2(px, min.y), ImVec2(px, max.y), gridColour);
+	}
+
+	for (int y = 0; y <= TILEMAXY; y++)
+	{
+		float py = min.y + y * tileH;
+		drawList->AddLine(ImVec2(min.x, py), ImVec2(max.x, py), gridColour);
+	}
+
+	ImGui::End();
+}
+
+void Debugger::DrawTile(const PPU::Tile& tile, int startX, int startY)
+{
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			Color c = colours[tile.pixels[y][x]];
+			vbuffer[(startY + y) * (TILEMAXX * TILESIZE) + (startX + x)] = c;
+		}
+	}
 }

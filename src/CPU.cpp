@@ -26,7 +26,7 @@ CPU::CPU(MemoryBus& mem) : mem(mem)
 
 uint8_t CPU::Step()
 {
-	if (regs.PC >= 256) return 0;
+	//if (regs.PC >= 256) return 0;
 	lastPC = regs.PC;
 	ss.str("");
 

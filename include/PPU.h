@@ -22,10 +22,15 @@ public:
         uint8_t WX = 0;     // 0xFF4B
     };
 
+    struct Tile
+    {
+        uint8_t pixels[8][8];
+    };
+
 	PPU();
     void Step(uint8_t cycles);
 
-	uint8_t GetByte(uint16_t addr);
+	const uint8_t GetByte(uint16_t addr) const;
 	void WriteByte(uint16_t addr, uint8_t data);
 
     uint8_t GetIOReg(uint16_t addr);
@@ -33,6 +38,8 @@ public:
 
     const LCDRegs& GetRegs() const;
 	const std::array<uint8_t, 0x2000>& GetVram() const;
+
+    const Tile& GetTile(uint16_t index) const;
 
 private:
 	std::array<uint8_t, 0x2000> vram{};

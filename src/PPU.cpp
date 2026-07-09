@@ -19,9 +19,11 @@ void PPU::Step(uint8_t cycles)
         if (regs.LY > 153)
             regs.LY = 0;
     }
+
+    // calc time, and if it's been 16.74ms ish, then draw
 }
 
-uint8_t PPU::GetByte(uint16_t addr)
+const uint8_t PPU::GetByte(uint16_t addr) const
 {
 	if (addr < 0x2000)
 		return vram[addr];
@@ -35,6 +37,31 @@ void PPU::WriteByte(uint16_t addr, uint8_t data)
 		vram[addr] = data;
 	else
 		throw new std::runtime_error("[ERROR]: Trying to access outside of Cartridge memory.");
+}
+
+const PPU::Tile& PPU::GetTile(uint16_t index) const
+{
+    Tile tile{};
+    // get the actual address in the VRAM
+    uint16_t addr = index * 16;
+
+    // from addr to addr + 16, where addr += 2 to account for two bytes
+    for (int y = 0; y < 8; y++)
+    {
+        uint8_t low = GetByte(addr + y * 2);
+        uint8_t high = GetByte(addr + y * 2 + 1);
+
+        // merge each pixel to be high-low so like 01 or 11 or 10 or 00
+        for (int x = 0; x < 8; x++)
+        {
+            uint8_t lowBit = (low >> (7 - x)) & 1;
+            uint8_t highBit = (high >> (7 - x)) & 1;
+
+            tile.pixels[y][x] = (highBit << 1) | lowBit;
+        }
+    }
+
+    return tile;
 }
 
 uint8_t PPU::GetIOReg(uint16_t addr)

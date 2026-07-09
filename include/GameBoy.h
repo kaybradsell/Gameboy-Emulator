@@ -19,10 +19,13 @@ public:
 
 	void SkipLoop();
 
+	int speed = 1;
+
 private:
 	MemoryBus mem;
 	CPU cpu;
 	PPU ppu;
+	Cartridge cart;
 	std::string bootROMpath = "ROMS/dmg_boot.bin";
 	bool paused = false;
 };

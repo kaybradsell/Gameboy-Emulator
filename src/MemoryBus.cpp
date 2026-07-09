@@ -2,11 +2,9 @@
 #include <iostream>
 #include <fstream>
 
-MemoryBus::MemoryBus(PPU& ppu) : ppu(ppu)
+MemoryBus::MemoryBus(PPU& ppu, Cartridge& cart) : ppu(ppu), cartridge(cart)
 {
 	std::cout << "[Notice]: Memory Bus started init...\n";
-
-	cartridge = Cartridge();
 
 	std::cout << "[Notice]: Memory Bus initialised.\n";
 }
@@ -30,9 +28,10 @@ void MemoryBus::LoadBootROM(const std::string& path)
 
 uint8_t MemoryBus::GetByte(uint16_t addr)
 {
-	if (addr < 0x0100) // fix this fucking shit later
+	if (bootROMEnabled && addr < 0x0100)
 		return bootROM[addr];
-	else if (addr < 0x8000)
+
+	if (addr < 0x8000)
 		return cartridge.GetByte(addr);
 	else if (addr < 0xA000)
 		return ppu.GetByte(addr - 0x8000);
@@ -44,7 +43,9 @@ uint8_t MemoryBus::GetByte(uint16_t addr)
 
 void MemoryBus::WriteByte(uint16_t addr, uint8_t data)
 {
-	std::cout << "Totally wrote " << std::hex << std::uppercase << (int)data << " into addr " << (int)addr << "\n";
+	if (addr == 0xFF50 && data != 0)
+		bootROMEnabled = false;
+
 	if (addr < 0x8000) // fix this fucking shit later
 		cartridge.WriteByte(addr, data);
 	else if (addr < 0xA000)

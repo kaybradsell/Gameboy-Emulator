@@ -10,7 +10,7 @@
 class MemoryBus
 {
 public:
-	MemoryBus(PPU& ppu);
+	MemoryBus(PPU& ppu, Cartridge& cart);
 	bool isInitialised() { return true; } // TODO: add check for memory bus
 	void LoadBootROM(const std::string& path);
 
@@ -23,6 +23,8 @@ private:
 	// memory that doesn't need to be it's own class
 	std::array<uint8_t, 256> bootROM{};		// read boot rom into here
 	std::array<uint8_t, 0x7F> HRAM{};		// High RAM :D
-	Cartridge cartridge;
+	Cartridge& cartridge;
 	PPU& ppu;
+
+	bool bootROMEnabled = true;
 };
