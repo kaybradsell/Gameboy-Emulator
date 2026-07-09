@@ -4,6 +4,7 @@
 GameBoy::GameBoy() : ppu(), mem(ppu), cpu(mem)
 {
 	mem.LoadBootROM(bootROMpath);
+	paused = true;
 }
 
 void GameBoy::Pause(bool pause)
@@ -13,22 +14,26 @@ void GameBoy::Pause(bool pause)
 
 void GameBoy::Cycle()
 {
+	//paused = true;
 	if (paused) return;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 10000; i++)
 	{
-		// idk if i should do the proper timings here but
-	// for now who cares?
+		if (cpu.GetLastPC() == 0xf1)
+		{
+			paused = true;
+			break;
+		}
+
 		Step();
 	}
-
 	
 }
 
 void GameBoy::Step()
 {
-	cpu.Step();
-	ppu.Step();
+	uint8_t cycles = cpu.Step();
+	ppu.Step(cycles);
 }
 
 const CPU& GameBoy::GetCPU() const

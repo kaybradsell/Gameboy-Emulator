@@ -1,14 +1,15 @@
 #include <PPU.h>
 #include <stdexcept>
+#include <iostream>
 
 PPU::PPU()
 {
 	vram.fill(0);
 }
 
-void PPU::Step()
+void PPU::Step(uint8_t cycles)
 {
-    cycleCounter++; // use cycles next
+    cycleCounter += (int)cycles;
 
     while (cycleCounter >= 456)
     {
@@ -18,8 +19,6 @@ void PPU::Step()
         if (regs.LY > 153)
             regs.LY = 0;
     }
-
-    regs.LY = 0x90;
 }
 
 uint8_t PPU::GetByte(uint16_t addr)

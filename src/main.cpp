@@ -13,8 +13,7 @@ int main()
 
     while (d.Running())
     {
-        //for (int i = 0; i < 100; i++)
-            gb.Cycle();
+        gb.Cycle();
         d.Display();
     }
 }

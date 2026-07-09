@@ -35,7 +35,7 @@ class CPU
 public:
 	CPU(MemoryBus& mem);
 
-	void Step();
+	uint8_t Step();
 
 	const Registers& GetRegisters() const;
 	uint16_t GetLastPC() const { return lastPC; }
@@ -56,7 +56,7 @@ private:
 	std::array<std::string, HISTORY_SIZE> history;
 	int historyIndex = 0;
 
-	using Opcode = void(CPU::*)();
+	using Opcode = uint8_t(CPU::*)();
 	std::array<Opcode, 256> opcode;
 	void FillOpcodeTable();
 
@@ -75,54 +75,57 @@ private:
 	void Push(uint16_t value);
 	uint16_t Pop();
 
-	void NOP();				// 0x00
-	void INC_B();			// 0x04
-	void DEC_B();			// 0x05
-	void LD_B_u8();			// 0x06
-	void INC_C();			// 0x0C
-	void DEC_C();			// 0x0D
-	void LD_C_u8();			// 0x0E
-	void LD_DE_u16();		// 0x11
-	void INC_DE();			// 0x13
-	void DEC_D();			// 0x15
-	void RLA();				// 0x17
-	void JR_i8();			// 0x18
-	void LDL_A_DE();		// 0x1A
-	void DEC_E();			// 0x1D
-	void LD_E_u8();			// 0x1E
-	void JR_NZ_i8();		// 0x20
-	void LD_HL_u16();		// 0x21
-	void LD_HL_plus_A();	// 0x22
-	void INC_HL();			// 0x23
-	void INC_H();			// 0x24
-	void JR_Z_i8();			// 0x28
-	void LD_L_u8();			// 0x2E
-	void LD_SP_u16();		// 0x31
-	void LD_HL_minus_A();	// 0x32
-	void DEC_A();			// 0x3D
-	void LD_A_u8();			// 0x3E
-	void LD_C_A();			// 0x4F
-	void LD_D_A();			// 0x57
-	void LD_H_A();			// 0x67
-	void LD_HL_A();			// 0x77
-	void LD_A_E();			// 0x7B
-	void LD_A_H();			// 0x7C
-	void LD_A_L();			// 0x7D
-	void SUB_A_B();			// 0x90
-	void XOR_r();			// 0xA8 - 0xAF
-	void CP_A_HL();			// 0xBE
-	void POP_BC();			// 0xC1
-	void PUSH_BC();			// 0xC5
-	void RET();				// 0xC9
-	void CB_Prefix();		// 0xCB
-	void CALL_u16();		// 0xCD
-	void LDH_u8_A();		// 0xE0
-	void LDH_C_A();			// 0xE2
-	void LDL_u16_A();		// 0xEA
-	void LDH_A_u8();		// 0xF0
-	void CP_A_u8();			// 0xFE
+	uint8_t NOP();				// 0x00
+	uint8_t INC_B();			// 0x04
+	uint8_t DEC_B();			// 0x05
+	uint8_t LD_B_u8();			// 0x06
+	uint8_t INC_C();			// 0x0C
+	uint8_t DEC_C();			// 0x0D
+	uint8_t LD_C_u8();			// 0x0E
+	uint8_t LD_DE_u16();		// 0x11
+	uint8_t INC_DE();			// 0x13
+	uint8_t DEC_D();			// 0x15
+	uint8_t RLA();				// 0x17
+	uint8_t JR_i8();			// 0x18
+	uint8_t LDL_A_DE();			// 0x1A
+	uint8_t DEC_E();			// 0x1D
+	uint8_t LD_E_u8();			// 0x1E
+	uint8_t JR_NZ_i8();			// 0x20
+	uint8_t LD_HL_u16();		// 0x21
+	uint8_t LD_HL_plus_A();		// 0x22
+	uint8_t INC_HL();			// 0x23
+	uint8_t INC_H();			// 0x24
+	uint8_t JR_Z_i8();			// 0x28
+	uint8_t LD_L_u8();			// 0x2E
+	uint8_t LD_SP_u16();		// 0x31
+	uint8_t LD_HL_minus_A();	// 0x32
+	uint8_t DEC_A();			// 0x3D
+	uint8_t LD_A_u8();			// 0x3E
+	uint8_t LD_C_A();			// 0x4F
+	uint8_t LD_D_A();			// 0x57
+	uint8_t LD_H_A();			// 0x67
+	uint8_t LD_HL_A();			// 0x77
+	uint8_t LD_A_B();			// 0x79
+	uint8_t LD_A_E();			// 0x7B
+	uint8_t LD_A_H();			// 0x7C
+	uint8_t LD_A_L();			// 0x7D
+	uint8_t ADD_A_HL();			// 0x86
+	uint8_t SUB_A_B();			// 0x90
+	uint8_t XOR_r();			// 0xA8 - 0xAF
+	uint8_t XOR_A_HL();			// 0xAE
+	uint8_t CP_A_HL();			// 0xBE
+	uint8_t POP_BC();			// 0xC1
+	uint8_t PUSH_BC();			// 0xC5
+	uint8_t RET();				// 0xC9
+	uint8_t CB_Prefix();		// 0xCB
+	uint8_t CALL_u16();			// 0xCD
+	uint8_t LDH_u8_A();			// 0xE0
+	uint8_t LDH_C_A();			// 0xE2
+	uint8_t LDL_u16_A();		// 0xEA
+	uint8_t LDH_A_u8();			// 0xF0
+	uint8_t CP_A_u8();			// 0xFE
 
-	void CB_Execute(uint8_t op, uint8_t reg);
+	uint8_t CB_Execute(uint8_t op, uint8_t reg);
 	uint8_t RLC(uint8_t val);
 	uint8_t RRC(uint8_t val);
 	uint8_t RL(uint8_t val);
@@ -131,8 +134,8 @@ private:
 	uint8_t SRA(uint8_t val);
 	uint8_t SWAP(uint8_t val);
 	uint8_t SRL(uint8_t val);
-	void CB_BIT(uint8_t val);
-	void CB_RES(uint8_t val);
-	void CB_SET(uint8_t val);
+	uint8_t CB_BIT(uint8_t val);
+	uint8_t CB_RES(uint8_t val);
+	uint8_t CB_SET(uint8_t val);
 
 };

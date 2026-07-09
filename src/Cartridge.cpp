@@ -16,9 +16,9 @@ Cartridge::Cartridge()
 	bank1.fill(0);
 
 	// read in the nintendo logo into the header.
-	for (int i = 0x0104; i < 0x0133; i++)
+	for (int i = 0; i < 48; i++)
 	{
-		bank0[i] = nintendoLogo[0];
+		bank0[0x0104 + i] = nintendoLogo[i];
 	}
 }
 
