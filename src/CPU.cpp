@@ -16,6 +16,7 @@ CPU::CPU(MemoryBus& mem) : mem(mem)
 	std::cout << "[Notice]: CPU started init...\n";
 	
 	regs.PC = 0x0;
+	//regs.PC = 0x00F0;
 	FillOpcodeTable();
 
 	std::cout << "[Notice]: CPU initialised.\n";
@@ -103,9 +104,12 @@ void CPU::FillOpcodeTable()
 	opcode[0x67] = &CPU::LD_H_A;
 
 	opcode[0x77] = &CPU::LD_HL_A;
+	opcode[0x78] = &CPU::LD_A_B;
 	opcode[0x7B] = &CPU::LD_A_E;
 	opcode[0x7C] = &CPU::LD_A_H;
 	opcode[0x7D] = &CPU::LD_A_L;
+
+	opcode[0x86] = &CPU::ADD_A_HL;
 
 	opcode[0x90] = &CPU::SUB_A_B;
 
@@ -611,6 +615,18 @@ uint8_t CPU::LD_HL_A()		// 0x77
 
 //----------------------------------------------
 
+uint8_t CPU::LD_A_B()		// 0x78
+{
+	regs.A = regs.B;
+
+	ss << "LD A, B";
+	currentOpcode = ss.str();
+
+	return 4;
+}
+
+//----------------------------------------------
+
 uint8_t CPU::LD_A_E()		// 0x7B
 {
 	regs.A = regs.E;
@@ -643,6 +659,30 @@ uint8_t CPU::LD_A_L()		// 0x7D
 	currentOpcode = ss.str();
 
 	return 4;
+}
+
+//---------------------------------------------------------//
+//                       0x8 opcodes                       //
+//---------------------------------------------------------//
+
+uint8_t CPU::ADD_A_HL()		// 0x86
+{
+	uint16_t addr = GetReg(Regs16::HL);
+	uint8_t val = mem.GetByte(addr);
+	uint8_t oldA = regs.A;
+
+	uint16_t result = oldA + val;
+	regs.A = (uint8_t)result;
+
+	SetFlag(Flags::Z, regs.A == 0);
+	SetFlag(Flags::N, false);
+	SetFlag(Flags::H, ((oldA & 0x0F) + (val & 0x0F)) > 0x0F);
+	SetFlag(Flags::C, result > 0xFF);
+
+	ss << "ADD A, (HL)";
+	currentOpcode = ss.str();
+
+	return 8;
 }
 
 //---------------------------------------------------------//
@@ -907,7 +947,7 @@ uint8_t CPU::CB_Execute(uint8_t op, uint8_t reg)
 	if (reg == 6) // HL
 		val = mem.GetByte(GetReg(Regs16::HL));
 	else
-		uint8_t val = GetReg(reg);
+		val = GetReg(reg);
 
 	switch (op)
 	{

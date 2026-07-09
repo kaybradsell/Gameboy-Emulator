@@ -17,8 +17,16 @@ void GameBoy::Cycle()
 	//paused = true;
 	if (paused) return;
 
-	//for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 10000; i++)
+	{
+		if (cpu.GetLastPC() == 0xf1)
+		{
+			paused = true;
+			break;
+		}
+
 		Step();
+	}
 	
 }
 

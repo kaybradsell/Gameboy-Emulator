@@ -105,9 +105,11 @@ private:
 	uint8_t LD_D_A();			// 0x57
 	uint8_t LD_H_A();			// 0x67
 	uint8_t LD_HL_A();			// 0x77
+	uint8_t LD_A_B();			// 0x79
 	uint8_t LD_A_E();			// 0x7B
 	uint8_t LD_A_H();			// 0x7C
 	uint8_t LD_A_L();			// 0x7D
+	uint8_t ADD_A_HL();			// 0x86
 	uint8_t SUB_A_B();			// 0x90
 	uint8_t XOR_r();			// 0xA8 - 0xAF
 	uint8_t XOR_A_HL();			// 0xAE

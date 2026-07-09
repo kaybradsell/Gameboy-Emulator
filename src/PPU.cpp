@@ -9,7 +9,7 @@ PPU::PPU()
 
 void PPU::Step(uint8_t cycles)
 {
-    cycleCounter += cycles;
+    cycleCounter += (int)cycles;
 
     while (cycleCounter >= 456)
     {
