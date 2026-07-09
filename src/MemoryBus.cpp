@@ -30,7 +30,7 @@ void MemoryBus::LoadBootROM(const std::string& path)
 
 uint8_t MemoryBus::GetByte(uint16_t addr)
 {
-	if (addr < 0x00FF) // fix this fucking shit later
+	if (addr < 0x0100) // fix this fucking shit later
 		return bootROM[addr];
 	else if (addr < 0x8000)
 		return cartridge.GetByte(addr);
@@ -44,8 +44,8 @@ uint8_t MemoryBus::GetByte(uint16_t addr)
 
 void MemoryBus::WriteByte(uint16_t addr, uint8_t data)
 {
-	//std::cout << "Totally wrote " << std::hex << std::uppercase << (int)data << " into addr " << (int)addr << "\n";
-	if (addr < 0x4000) // fix this fucking shit later
+	std::cout << "Totally wrote " << std::hex << std::uppercase << (int)data << " into addr " << (int)addr << "\n";
+	if (addr < 0x8000) // fix this fucking shit later
 		cartridge.WriteByte(addr, data);
 	else if (addr < 0xA000)
 		ppu.WriteByte(addr - 0x8000, data);

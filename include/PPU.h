@@ -23,7 +23,7 @@ public:
     };
 
 	PPU();
-    void Step();
+    void Step(uint8_t cycles);
 
 	uint8_t GetByte(uint16_t addr);
 	void WriteByte(uint16_t addr, uint8_t data);

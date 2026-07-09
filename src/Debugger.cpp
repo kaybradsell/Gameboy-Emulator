@@ -184,7 +184,9 @@ void Debugger::DrawMemory()
 			for (int row = 0; row < (0x2000 / 16); row++)
 			{
 				int base = row * 16;
-				ImGui::Text("%04X:", base);
+				int address = base + 0x8000;
+
+				ImGui::Text("%04X:", address);
 				ImGui::SameLine();
 
 				for (int i = 0; i < 16; i++)
